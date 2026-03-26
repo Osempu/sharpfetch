@@ -14,8 +14,8 @@
 - [x] Create helper functions for disk space conversion, etc. (optional).
 ----
 ### Day 3 (Next Stream)
-- [ ] Add colour for the system info output
-- [ ] Fix GetMemory functionality to display correct values
+- [x] Add colour for the system info output
+- [x] Fix GetMemory functionality to display correct values
 - [ ] Group Sys info and add a tree widget
 - [ ] Reasearch if we can add Kernel, WM, terminal, shell, Bios, GPU, Datetime, packages if possible for next stream.
 - [ ] Add a minimal and full flags to display minimal system information or full info.

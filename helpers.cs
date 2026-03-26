@@ -14,19 +14,30 @@ public static class Helpers
 
     public static string Execute(string cmd, string args)
     {
-        var p = new Process
+        try
         {
-            StartInfo = new ProcessStartInfo
+            var p = new Process
             {
-                FileName = cmd,
-                Arguments = args,
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-            }
-        };
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = cmd,
+                    Arguments = args,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
 
-        p.Start();
-        return p.StandardOutput.ReadToEnd().Trim();
+            p.Start();
+            var output = p.StandardOutput.ReadToEnd().Trim();
+            p.WaitForExit();
+            return output;
+        }
+        catch
+        {
+            return string.Empty;
+        }
     }
 
     public static long ParseMemInfoLine(string line)
