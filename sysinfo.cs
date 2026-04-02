@@ -1,6 +1,7 @@
 using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 
 namespace sharpfetch;
 
@@ -138,6 +139,21 @@ public partial class Sysinfo
         return "Unknown";
     }
 
+    public (double free, double total) GetDiskChart()
+    {
+        var drive = DriveInfo.GetDrives().FirstOrDefault(d => d.IsReady && d.RootDirectory.FullName == "/")
+            ?? DriveInfo.GetDrives().FirstOrDefault(d => d.IsReady);
+
+        if (drive != null)
+        {
+            var free = Helpers.ToGBDouble((ulong)drive.AvailableFreeSpace);
+            var total = Helpers.ToGBDouble((ulong)drive.TotalSize);
+            return (free, total);
+        }
+
+        return (0, 0);
+    }
+
     private MemoryInfo GetWindowsMemoryInfo()
     {
         var memStatus = new MEMORYSTATUSEX();
@@ -266,7 +282,7 @@ public partial class Sysinfo
         {
             // Try to detect common window managers
             string[] wmEnvVars = { "XDG_CURRENT_DESKTOP", "DESKTOP_SESSION", "GDMSESSION" };
-            
+
             foreach (var envVar in wmEnvVars)
             {
                 var value = Environment.GetEnvironmentVariable(envVar);
@@ -281,7 +297,7 @@ public partial class Sysinfo
             {
                 var wmCheck = Helpers.Execute("ps", "-e");
                 string[] wms = { "gnome-shell", "kwin", "xfwm4", "i3", "awesome", "dwm", "bspwm" };
-                
+
                 foreach (var wm in wms)
                 {
                     if (wmCheck.Contains(wm))
@@ -387,7 +403,7 @@ public partial class Sysinfo
             {
                 // Use PowerShell CIM cmdlet (modern replacement for WMI)
                 var biosVersion = Helpers.Execute("powershell", "-NoProfile -Command \"Get-CimInstance -ClassName Win32_BIOS | Select-Object -ExpandProperty SMBIOSBIOSVersion\"");
-                
+
                 if (!string.IsNullOrWhiteSpace(biosVersion))
                 {
                     return biosVersion;
@@ -433,11 +449,11 @@ public partial class Sysinfo
             {
                 // Use PowerShell CIM cmdlet (modern replacement for WMI)
                 var gpuInfo = Helpers.Execute("powershell", "-NoProfile -Command \"Get-CimInstance -ClassName Win32_VideoController | Select-Object -ExpandProperty Name\"");
-                
+
                 if (!string.IsNullOrWhiteSpace(gpuInfo))
                 {
                     var lines = gpuInfo.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                    
+
                     if (lines.Length > 0)
                     {
                         return string.Join(", ", lines);
@@ -479,7 +495,7 @@ public partial class Sysinfo
             {
                 var gpuInfo = Helpers.Execute("system_profiler", "SPDisplaysDataType");
                 var lines = gpuInfo.Split('\n');
-                
+
                 foreach (var line in lines)
                 {
                     if (line.Contains("Chipset Model:"))

@@ -7,6 +7,9 @@ public static class Helpers
     public static object ToGB(ulong bytes)
     => bytes / 1024 / 1024 / 1024;
 
+    public static double ToGBDouble(ulong bytes)
+    => bytes / 1024.0 / 1024.0 / 1024.0;
+
     public static string FormatTime(TimeSpan uptime)
     {
         return $"{(int)uptime.TotalHours}h {uptime.Minutes}m {uptime.Seconds}s";

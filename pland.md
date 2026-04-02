@@ -13,10 +13,18 @@
 - [x] Extend system info adding disk space, runtime, uptime, memory, cpu.
 - [x] Create helper functions for disk space conversion, etc. (optional).
 ----
-### Day 3 (Next Stream)
+### Day 3 Completed ‼️🎉
 - [x] Add colour for the system info output
 - [x] Fix GetMemory functionality to display correct values
-- [ ] Group Sys info and add a tree widget
-- [ ] Reasearch if we can add Kernel, WM, terminal, shell, Bios, GPU, Datetime, packages if possible for next stream.
-- [ ] Add a minimal and full flags to display minimal system information or full info.
-- [ ] Add Charts widget to show memory and diskspace.
+- [x] Group Sys info and add a tree widget (We will add different ways of printing the information)
+- [x] Reasearch if we can add Kernel, WM, terminal, shell, Bios, GPU, Datetime, packages if possible for next stream.
+- [x] Add a minimal and full flags to display minimal system information or full info.
+- [x] Add Charts widget to show memory and diskspace.
+
+### Day 4 (Next Stream, Friday 27th)
+- [ ] Get disk space and memory charts into the panel with their grouped info
+- [ ] Fix and refator --no-icons logic
+- [ ] Refactor and maybe rename --minimal flag to something like (--output "minimal | full")
+- [ ] Add different output format (eg. panels, trees, left panel)
+- [ ] Plan to implement configuration (JSON File) for CLI app.
+- [ ] Add a colouring options (eg. rainbow, no color, color per group).

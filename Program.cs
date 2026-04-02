@@ -9,12 +9,21 @@ var iconOption = new Option<bool>("--no-icons")
     Arity = ArgumentArity.Zero
 };
 
+var isMinimalOption = new Option<bool>("--minimal")
+{
+    Description = "Whether to display a minimal output or not",
+    Arity = ArgumentArity.Zero
+};
+
 rootCommand.Options.Add(iconOption);
+rootCommand.Options.Add(isMinimalOption);
 
 rootCommand.SetAction(parseResult =>
 {
     bool hideIcons = parseResult.GetValue(iconOption);
-    SharpFetchGraphics.printSysInfo(hideIcons);
+    bool isMinimal = parseResult.GetValue(isMinimalOption);
+
+    SharpFetchGraphics.printSysInfo(hideIcons, isMinimal);
 
     return 0;
 });
