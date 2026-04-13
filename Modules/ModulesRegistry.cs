@@ -2,6 +2,9 @@ using sharpfetch.Configuration;
 
 namespace sharpfetch.Modules;
 
+/// <summary>
+/// Central registry for all available modules.
+/// </summary>
 public class ModuleRegistry
 {
     private readonly Dictionary<string, IModule> _modules = new();
@@ -9,11 +12,15 @@ public class ModuleRegistry
 
     public static ModuleRegistry Instance => _instance.Value;
 
-    private ModulesRegistry()
+    private ModuleRegistry()
     {
+        // Auto-discover and register all modules
         DiscoverModules();
     }
 
+    /// <summary>
+    /// Discovers all IModule implementations via reflection.
+    /// </summary>
     private void DiscoverModules()
     {
         var moduleType = typeof(IModule);
@@ -29,34 +36,59 @@ public class ModuleRegistry
         }
     }
 
+    /// <summary>
+    /// Manually register a module.
+    /// </summary>
     public void Register(IModule module)
     {
         _modules[module.Id] = module;
     }
 
-    public IModule? GetModules(string id)
+    /// <summary>
+    /// Get a specific module by ID.
+    /// </summary>
+    public IModule? GetModule(string id)
     {
         return _modules.TryGetValue(id, out var module) ? module : null;
     }
 
-    public IEnumerable<IModule> GetAllModules(IEnumerable<string> ids)
+    /// <summary>
+    /// Get all registered modules.
+    /// </summary>
+    public IEnumerable<IModule> GetAllModules()
     {
-        return ids.Select(id => GetModules(id))
+        return _modules.Values.OrderBy(m => m.Order);
+    }
+
+    /// <summary>
+    /// Get modules filtered by IDs.
+    /// </summary>
+    public IEnumerable<IModule> GetModules(IEnumerable<string> ids)
+    {
+        return ids.Select(id => GetModule(id))
             .Where(m => m != null)
             .Cast<IModule>()
             .OrderBy(m => m.Order);
     }
 
+    /// <summary>
+    /// Get all enabled modules based on configuration.
+    /// </summary>
     public IEnumerable<IModule> GetEnabledModules(ModuleConfiguration config)
     {
         if (config.Modules.Any())
         {
+            // If specific modules are listed, use only those
             return GetModules(config.Modules);
         }
 
+        // Otherwise, return all modules enabled by default
         return GetAllModules().Where(m => m.EnabledByDefault);
     }
 
+    /// <summary>
+    /// Get available module IDs.
+    /// </summary>
     public IEnumerable<string> GetModuleIds()
     {
         return _modules.Keys.OrderBy(k => k);

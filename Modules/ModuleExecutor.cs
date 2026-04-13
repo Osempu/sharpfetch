@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using sharpfetch.Configuration;
 
 namespace sharpfetch.Modules;
 

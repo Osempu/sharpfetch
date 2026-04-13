@@ -1,7 +1,7 @@
 ﻿using System.CommandLine;
 using sharpfetch;
 
-var rootCommand = new RootCommand("sharpfetch");
+var rootCommand = new RootCommand("SharpFetch - Fast System Information Tool");
 
 var iconOption = new Option<bool>("--no-icons")
 {
