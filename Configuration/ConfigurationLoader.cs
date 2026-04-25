@@ -64,7 +64,8 @@ public class ConfigurationLoader
                 Format = "panels",
                 ShowIcons = true,
                 ColorScheme = "default",
-                ShowCharts = true
+                ShowCharts = true,
+                GroupModules = true
             }
         };
 

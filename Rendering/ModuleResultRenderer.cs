@@ -20,6 +20,13 @@ public class ModuleResultRenderer
     /// </summary>
     public void Render(IReadOnlyList<ModuleResult> results)
     {
+        // leftpanel is always flat — it never uses groups
+        if (_config.Display.Format.Equals("leftpanel", StringComparison.OrdinalIgnoreCase))
+        {
+            RenderAsLeftPanel(results.Where(r => r.Success).ToList());
+            return;
+        }
+
         var groups = BuildDisplayGroups(results);
 
         switch (_config.Display.Format.ToLowerInvariant())
@@ -32,9 +39,6 @@ public class ModuleResultRenderer
                 break;
             case "minimal":
                 RenderAsMinimal(groups);
-                break;
-            case "leftpanel":
-                RenderAsLeftPanel(groups);
                 break;
             default:
                 RenderAsMinimal(groups);
@@ -58,7 +62,7 @@ public class ModuleResultRenderer
     {
         var successful = results.Where(r => r.Success).ToList();
 
-        if (!_config.Modules.GroupModules)
+        if (!_config.Display.GroupModules)
             return [new DisplayGroup("System Information", "green", successful)];
 
         var configuredGroups = _config.Modules.Groups;
@@ -151,13 +155,17 @@ public class ModuleResultRenderer
                 .AddColumn();
 
             foreach (var result in group.Results)
-                grid.AddRow($"[yellow]{FormatLabel(result)}[/]", $"[cyan]{result.Value}[/]");
+                grid.AddRow($"[yellow]{FormatLabel(result)}[/]", FormatValue(result));
 
             AnsiConsole.Write(
                 new Panel(grid)
                     .Header(group.DisplayName, Justify.Center)
                     .RoundedBorder()
                     .BorderColor(Color.FromConsoleColor(MapColor(group.Color))));
+
+            // Render BreakdownCharts for any module that provides chart data
+            if (_config.Display.ShowCharts)
+                RenderCharts(group.Results);
         }
     }
 
@@ -169,7 +177,7 @@ public class ModuleResultRenderer
                 .Style(Style.Parse($"{group.Color} bold"));
 
             foreach (var result in group.Results)
-                tree.AddNode($"[yellow]{FormatLabel(result)}:[/] [cyan]{result.Value}[/]");
+                tree.AddNode($"[yellow]{FormatLabel(result)}:[/] {FormatValue(result)}");
 
             AnsiConsole.Write(tree);
         }
@@ -186,36 +194,81 @@ public class ModuleResultRenderer
 
             AnsiConsole.MarkupLineInterpolated($"[bold]{group.DisplayName}[/]");
             foreach (var result in group.Results)
-                Console.WriteLine($"  {FormatLabel(result)}: {result.Value}");
+                Console.WriteLine($"  {FormatLabel(result)}: {result.Value}{FormatExecutionTimeSuffix(result)}");
         }
     }
 
-    private void RenderAsLeftPanel(IReadOnlyList<DisplayGroup> groups)
+    private void RenderAsLeftPanel(IReadOnlyList<ModuleResult> results)
     {
-        foreach (var group in groups)
+        // Left column: labels only, inside a bordered panel
+        var labelGrid = new Grid().AddColumn();
+        // Right column: values only, plain grid — one empty leading row to
+        // align with the label text that sits below the panel's top border line
+        var valueGrid = new Grid().AddColumn();
+        valueGrid.AddRow(string.Empty);
+
+        foreach (var result in results)
         {
-            var labelGrid = new Grid().AddColumn();
-            var valueGrid = new Grid().AddColumn();
+            labelGrid.AddRow($"[yellow]{FormatLabel(result)}[/]");
+            valueGrid.AddRow(FormatValue(result));
+        }
 
-            foreach (var result in group.Results)
-            {
-                labelGrid.AddRow($"[yellow]{FormatLabel(result)}[/]");
-                valueGrid.AddRow($"[cyan]{result.Value}[/]");
-            }
+        var parentGrid = new Grid()
+            .AddColumn(new GridColumn().PadRight(2))
+            .AddColumn(new GridColumn().PadRight(2))
+            .AddRow(
+                new Panel(labelGrid)
+                    .Header("System Info", Justify.Center)
+                    .RoundedBorder()
+                    .BorderStyle(new Style(foreground: Color.White))
+                    .Padding(0, 0, 1, 0),
+                valueGrid);
 
-            var parentGrid = new Grid()
-                .AddColumn(new GridColumn().PadRight(2))
-                .AddColumn()
-                .AddRow(
-                    new Panel(labelGrid)
-                        .Header(group.DisplayName, Justify.Center)
-                        .RoundedBorder()
-                        .BorderColor(Color.FromConsoleColor(MapColor(group.Color))),
-                    valueGrid);
+        AnsiConsole.Write(parentGrid);
+    }
 
-            AnsiConsole.Write(parentGrid);
+    // -------------------------------------------------------------------------
+    // Chart rendering
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// Emits a <see cref="BreakdownChart"/> wrapped in a titled panel for every result
+    /// in the group that carries <see cref="ModuleResult.ChartData"/>.
+    /// </summary>
+    private static void RenderCharts(IReadOnlyList<ModuleResult> results)
+    {
+        foreach (var result in results)
+        {
+            if (result.ChartData is not { Count: > 0 })
+                continue;
+
+            var chart = new BreakdownChart()
+                .FullSize()
+                .Width(60)
+                .ShowPercentage();
+
+            foreach (var entry in result.ChartData)
+                chart.AddItem(entry.Label, entry.Value, MapChartColor(entry.Color));
+
+            AnsiConsole.Write(
+                new Panel(chart)
+                    .Padding(1, 1)
+                    .Header($"{result.DisplayName} Usage"));
         }
     }
+
+    /// <summary>Maps a color name string to a Spectre.Console <see cref="Color"/>.</summary>
+    private static Color MapChartColor(string color) => color.ToLowerInvariant() switch
+    {
+        "red" => Color.Red,
+        "yellow" => Color.Yellow,
+        "blue" => Color.Blue,
+        "cyan" => Color.Aqua,
+        "magenta" => Color.Fuchsia,
+        "white" => Color.White,
+        "grey" or "gray" => Color.Grey,
+        _ => Color.Green,
+    };
 
     // -------------------------------------------------------------------------
     // Helpers
@@ -227,11 +280,40 @@ public class ModuleResultRenderer
         return _config.Display.ShowIcons ? $"{icon} {result.DisplayName}" : result.DisplayName;
     }
 
+    /// <summary>
+    /// Formats the module value and, when <see cref="ModuleConfiguration.ShowExecutionTime"/> is
+    /// enabled, appends a dim timing badge (e.g. <c>[white]foo[/] [grey](1.23 ms)[/]</c>).
+    /// </summary>
+    private string FormatValue(ModuleResult result)
+    {
+        var value = $"[white]{result.Value}[/]";
+        return _config.Modules.ShowExecutionTime
+            ? $"{value} [grey dim]({FormatElapsed(result.ExecutionTime)})[/]"
+            : value;
+    }
+
+    /// <summary>
+    /// Returns a plain-text timing suffix for renderers that write via <see cref="Console.WriteLine"/>
+    /// rather than Spectre markup (e.g. the minimal renderer).
+    /// </summary>
+    private string FormatExecutionTimeSuffix(ModuleResult result) =>
+        _config.Modules.ShowExecutionTime
+            ? $" ({FormatElapsed(result.ExecutionTime)})"
+            : string.Empty;
+
+    /// <summary>Formats a <see cref="TimeSpan"/> as a compact human-readable string.</summary>
+    private static string FormatElapsed(TimeSpan elapsed) =>
+        elapsed.TotalMilliseconds < 1
+            ? $"{elapsed.TotalMicroseconds:F0} µs"
+            : elapsed.TotalSeconds >= 1
+                ? $"{elapsed.TotalSeconds:F2} s"
+                : $"{elapsed.TotalMilliseconds:F2} ms";
+
     private static string GetIconForModule(string moduleId) => moduleId switch
     {
         "user" => "👤",
         "os" => "🖥️",
-        "kernel" => "⚙️",
+        "kernel" => "✅",
         "cpu" => "🔲",
         "memory" => "💾",
         "gpu" => "🎮",
@@ -240,7 +322,7 @@ public class ModuleResultRenderer
         "shell" => "🐚",
         "terminal" => "📟",
         "windowmanager" => "🪟",
-        "uptime" => "⏱️",
+        "uptime" => "🔥",
         "datetime" => "🕐",
         _ => "•",
     };

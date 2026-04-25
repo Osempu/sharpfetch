@@ -28,6 +28,16 @@ var noInconsOption = new Option<bool>("--no-icons")
     Description = "Disable icons in output"
 };
 
+var showChartsOption = new Option<bool?>("--show-charts")
+{
+    Description = "Show breakdown charts (true/false). Overrides config ShowCharts when specified."
+};
+
+var groupOption = new Option<bool?>("--group")
+{
+    Description = "Group modules into sections (true/false). Overrides config GroupModules when specified."
+};
+
 var parallelOption = new Option<bool>("--parallel")
 {
     DefaultValueFactory = isParallel => true,
@@ -49,6 +59,8 @@ rootCommand.Options.Add(configOption);
 rootCommand.Options.Add(modulesoption);
 rootCommand.Options.Add(formatOption);
 rootCommand.Options.Add(noInconsOption);
+rootCommand.Options.Add(showChartsOption);
+rootCommand.Options.Add(groupOption);
 rootCommand.Options.Add(parallelOption);
 rootCommand.Options.Add(listModulesOption);
 rootCommand.Options.Add(generateConfigOption);
@@ -59,6 +71,8 @@ rootCommand.SetAction(async (context) =>
     var modules = context.GetValue(modulesoption);
     var format = context.GetValue(formatOption);
     var noIcons = context.GetValue(noInconsOption);
+    var showCharts = context.GetValue(showChartsOption);
+    var group = context.GetValue(groupOption);
     var parallel = context.GetValue(parallelOption);
     var listModules = context.GetValue(listModulesOption);
     var generateConfig = context.GetValue(generateConfigOption);
@@ -100,6 +114,17 @@ rootCommand.SetAction(async (context) =>
     if (noIcons)
     {
         config.Display.ShowIcons = false;
+    }
+
+    // CLI flags take precedence over config file values when explicitly provided
+    if (showCharts.HasValue)
+    {
+        config.Display.ShowCharts = showCharts.Value;
+    }
+
+    if (group.HasValue)
+    {
+        config.Display.GroupModules = group.Value;
     }
 
     config.Modules.ParallelExecution = parallel;

@@ -9,21 +9,40 @@ public class DiskModule : ModuleBase
     public override string Group => "hardware";
     public override int Order => 40;
 
+    // Cached so GetChartData() uses the same drive as GetValueAsync()
+    private DriveInfo? _drive;
+
     protected override Task<string> GetValueAsync(CancellationToken cancellationToken)
         => RunAsync(GetDiskInfo, cancellationToken);
 
     private string GetDiskInfo()
     {
         // Prefer the root/system drive; fall back to any ready drive.
-        var drive = DriveInfo.GetDrives()
-                        .FirstOrDefault(d => d.IsReady && d.RootDirectory.FullName == "/")
-                    ?? DriveInfo.GetDrives().FirstOrDefault(d => d.IsReady);
+        _drive = DriveInfo.GetDrives()
+                     .FirstOrDefault(d => d.IsReady && d.RootDirectory.FullName == "/")
+                 ?? DriveInfo.GetDrives().FirstOrDefault(d => d.IsReady);
 
-        if (drive is null)
+        if (_drive is null)
             return "Unknown";
 
-        var free = Helpers.ToGBDouble((ulong)drive.AvailableFreeSpace);
-        var total = Helpers.ToGBDouble((ulong)drive.TotalSize);
+        var free = Helpers.ToGBDouble((ulong)_drive.AvailableFreeSpace);
+        var total = Helpers.ToGBDouble((ulong)_drive.TotalSize);
         return $"{free:F1} GB free / {total:F1} GB";
+    }
+
+    protected override IReadOnlyList<ChartEntry>? GetChartData()
+    {
+        if (_drive is null)
+            return null;
+
+        var free = Helpers.ToGBDouble((ulong)_drive.AvailableFreeSpace);
+        var total = Helpers.ToGBDouble((ulong)_drive.TotalSize);
+        var used = total - free;
+
+        return
+        [
+            new ChartEntry("Used", used, "red"),
+            new ChartEntry("Free", free, "green"),
+        ];
     }
 }

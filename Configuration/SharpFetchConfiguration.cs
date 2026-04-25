@@ -16,15 +16,9 @@ public class ModuleConfiguration
     public int TimeoutMs { get; set; } = 5000;
     public bool ShowExecutionTime { get; set; } = false;
     /// <summary>
-    /// When <c>true</c> (default), modules are grouped into named sections in the output.
-    /// When <c>false</c>, all modules are rendered in a single flat list regardless of
-    /// any <see cref="Groups"/> defined here or the modules' built-in group values.
-    /// </summary>
-    public bool GroupModules { get; set; } = true;
-    /// <summary>
     /// Named groups that control how modules are grouped in the output.
     /// When empty, modules are auto-grouped by their built-in Group property.
-    /// Only used when <see cref="GroupModules"/> is <c>true</c>.
+    /// Only used when <see cref="DisplayConfiguration.GroupModules"/> is <c>true</c>.
     /// </summary>
     public List<GroupConfiguration> Groups { get; set; } = [];
 }
@@ -62,4 +56,10 @@ public class DisplayConfiguration
     public bool ShowIcons { get; set; } = true;
     public string ColorScheme { get; set; } = "default";
     public bool ShowCharts { get; set; } = true;
+    /// <summary>
+    /// When <c>true</c> (default), modules are grouped into named sections in the output.
+    /// When <c>false</c>, all modules are rendered in a single flat list regardless of
+    /// any groups defined in <see cref="ModuleConfiguration.Groups"/> or the modules' built-in group values.
+    /// </summary>
+    public bool GroupModules { get; set; } = true;
 }

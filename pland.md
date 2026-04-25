@@ -28,15 +28,25 @@
 - [x] Add different output format (eg. panels, trees, left panel)
 - [x] Plan to implement configuration (JSON File) for CLI app.
 
-### Day 8 (In Progress ...)
+### Day 8 Completed ‼️🎉
 - [x] Add Missing Modules.
 - [x] Create a grouping mechanism for modules.
-- [ ] Add Left panel render method.
-- [ ] Move any missing logic in ModuleResultRender from old render file.
-- [ ] Start planning the interactive configuration Wizard.
+- [x] Add Left panel render method.
+- [x] Move any missing logic in ModuleResultRender from old render file (memory + disk BreakdownCharts).
+- [x] Start planning the interactive configuration Wizard.
+- [x] Adding showCharts and group CLI options.
+- [x] Fixed the ShowExecutionTime logic.
+
+### Day 9 (1🗓️ Next Session ... ) 
+- [ ] Implement interactive configuration wizard.
+- [ ] Maker the disk and memory charts leaner.
+- [ ] Add nerd font icons version for output icons.
+- [ ] Crate option to display nerd font or emoji icons.
+- [ ] Refactor project structure and remove unsued files.
+- [ ] Create an appealing README file and add some captures.
 
 ### 🗓️ Future Updates
-- [ ] Get disk space and memory charts into the panel with their grouped info
+- [x] Get disk space and memory charts into the panel with their grouped info
 - [ ] Add a colouring options (eg. rainbow, no color, color per group).
 
 ## System info Output Formats

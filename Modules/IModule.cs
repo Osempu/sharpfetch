@@ -1,5 +1,8 @@
 namespace sharpfetch.Modules;
 
+/// <summary>A single slice of data to be rendered in a <see cref="Spectre.Console.BreakdownChart"/>.</summary>
+public record ChartEntry(string Label, double Value, string Color);
+
 public interface IModule
 {
     string Id { get; }
@@ -25,6 +28,11 @@ public record ModuleResult
     public string? Value { get; init; }
     public string? ErrorMessage { get; init; }
     public TimeSpan ExecutionTime { get; init; }
+    /// <summary>
+    /// Optional chart data to display alongside the module value (e.g. memory or disk breakdown).
+    /// Null when the module does not support charts.
+    /// </summary>
+    public IReadOnlyList<ChartEntry>? ChartData { get; init; }
 
     public static ModuleResult CreateSuccess(
         string moduleId,

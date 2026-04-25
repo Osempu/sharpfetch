@@ -7,8 +7,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/bin/Debug/net9.0/sharpfetch.dll",
             "args": [
-                "--modules",
-                "cpu os memory"
+                "--format",
+                "lpanel"
             ],
         }
     ]

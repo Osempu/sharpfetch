@@ -26,7 +26,7 @@ public abstract class ModuleBase : IModule
                 Id,
                 DisplayName,
                 value,
-                stopwatch.Elapsed) with { Group = Group };
+                stopwatch.Elapsed) with { Group = Group, ChartData = GetChartData() };
         }
         catch (Exception ex)
         {
@@ -40,6 +40,12 @@ public abstract class ModuleBase : IModule
     }
 
     protected abstract Task<string> GetValueAsync(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Override in modules that support chart rendering (e.g. memory, disk).
+    /// Returns null by default — no chart is rendered.
+    /// </summary>
+    protected virtual IReadOnlyList<ChartEntry>? GetChartData() => null;
 
     protected Task<string> FromResult(string value) => Task.FromResult(value);
 
