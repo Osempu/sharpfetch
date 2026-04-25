@@ -1,0 +1,19 @@
+{
+  "Modules": {
+    "Modules": [
+      "os",
+      "cpu",
+      "memory",
+      "gpu"
+    ],
+    "ParallelExecution": true,
+    "TimeoutMs": 5000,
+    "ShowExecutionTime": false
+  },
+  "Display": {
+    "Format": "trees",
+    "ShowIcons": true,
+    "ColorScheme": "default",
+    "ShowCharts": true
+  }
+}

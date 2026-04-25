@@ -6,12 +6,6 @@ namespace sharpfetch;
 
 public static class ConsoleOutput
 {
-    private static Sysinfo _sysInfo;
-
-    private static void BuildSysInfo()
-    {
-
-    }
 
     public static void PrintAsPanels(Sysinfo sysInfo)
     {

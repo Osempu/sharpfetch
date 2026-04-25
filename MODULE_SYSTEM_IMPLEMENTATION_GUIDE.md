@@ -1164,32 +1164,32 @@ public async Task BenchmarkParallelExecution()
 
 ## Usage Examples (After Implementation)
 
-### Example 1: Display only CPU and Memory
+### ✅ Example 1: Display only CPU and Memory
 ```bash
 sharpfetch --modules cpu,memory
 ```
 
-### Example 2: Use custom config file
+### ✅ Example 2: Use custom config file
 ```bash
 sharpfetch --config ~/my-config.json
 ```
 
-### Example 3: List all available modules
+### ✅ Example 3: List all available modules
 ```bash
 sharpfetch --list-modules
 ```
 
-### Example 4: Generate default config
+### ✅ Example 4: Generate default config
 ```bash
 sharpfetch --generate-config config.json
 ```
 
-### Example 5: Minimal output without icons
+### ✅ Example 5: Minimal output without icons
 ```bash
 sharpfetch --format minimal --no-icons
 ```
 
-### Example 6: Using config file
+### ✅ Example 6: Using config file
 ```bash
 # Create ~/.sharpfetch.json with your preferences
 # Then just run:

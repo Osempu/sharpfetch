@@ -21,13 +21,22 @@
 - [x] Add a minimal and full flags to display minimal system information or full info.
 - [x] Add Charts widget to show memory and diskspace.
 
-### Day 4 (⌚ In Progress ... )
-- [ ] Plan and implement a way to let the user decide what to print and from there refactor and make no icons logic work as well as for minimal flag and any other existing option for the cli.
-- [ ] Get disk space and memory charts into the panel with their grouped info
-- [ ] Fix and refator --no-icons logic
-- [ ] Refactor and maybe rename --minimal flag to something like (--output "minimal | full")
+### Day 4 - 7 Completed  ‼️🎉
+- [x] Plan and implement a way to let the user decide what to print and from there refactor and make no icons logic work as well as for minimal flag and any other existing option for the cli.
+- [x] Fix and refator --no-icons logic
+- [x] Refactor and maybe rename --minimal flag to something like (--output "minimal | full")
 - [x] Add different output format (eg. panels, trees, left panel)
-- [ ] Plan to implement configuration (JSON File) for CLI app.
+- [x] Plan to implement configuration (JSON File) for CLI app.
+
+### Day 8 (In Progress ...)
+- [ ] Add Missing Modules.
+- [ ] Create a grouping mechanism for modules.
+- [ ] Add Left panel render method.
+- [ ] Move any missing logic in ModuleResultRender from old render file.
+- [ ] Start planning the interactive configuration Wizard.
+
+### 🗓️ Future Updates
+- [ ] Get disk space and memory charts into the panel with their grouped info
 - [ ] Add a colouring options (eg. rainbow, no color, color per group).
 
 ## System info Output Formats

@@ -12,15 +12,15 @@ public class ConfigurationLoader
         string[]? args = null,
         string? customConfigPath = null)
     {
-        var builder = new ConfigurationBuilder();
+        var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory());
 
         var userConfigPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            UserConfigFileName);
+            Directory.GetCurrentDirectory(),
+            DefaultConfigFilename);
 
-        if (File.Exists(userConfigPath))
+        if (File.Exists(userConfigPath) && string.IsNullOrEmpty(customConfigPath))
         {
-            builder.AddJsonFile(userConfigPath, optional: true);
+            builder.AddJsonFile(userConfigPath, optional: true, reloadOnChange: true);
         }
 
         if (!string.IsNullOrEmpty(customConfigPath) && File.Exists(customConfigPath))
