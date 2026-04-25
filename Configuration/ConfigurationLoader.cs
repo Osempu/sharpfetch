@@ -47,10 +47,17 @@ public class ConfigurationLoader
         {
             Modules = new ModuleConfiguration
             {
-                Modules = new List<string>(), // Empty = all default modules
+                Modules = [],   // empty = all default-enabled modules
                 ParallelExecution = true,
                 TimeoutMs = 5000,
-                ShowExecutionTime = false
+                ShowExecutionTime = false,
+                Groups =
+                [
+                    new GroupConfiguration { Id = "system",      DisplayName = "System Info",      Color = "green"   },
+                    new GroupConfiguration { Id = "hardware",    DisplayName = "Hardware Info",    Color = "cyan"    },
+                    new GroupConfiguration { Id = "environment", DisplayName = "Environment Info", Color = "blue"    },
+                    new GroupConfiguration { Id = "status",      DisplayName = "Status Info",      Color = "magenta" },
+                ]
             },
             Display = new DisplayConfiguration
             {

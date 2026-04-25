@@ -107,8 +107,8 @@ rootCommand.SetAction(async (context) =>
     var executor = new ModuleExecutor();
     var results = await executor.ExecuteFromConfigAsync(config.Modules);
 
-    var renderer = new ModuleResultRenderer(config.Display);
-    renderer.Renderer(results);
+    var renderer = new ModuleResultRenderer(config);
+    renderer.Render(results);
 });
 
 return rootCommand.Parse(args).Invoke();

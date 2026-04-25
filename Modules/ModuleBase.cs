@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-using System.Threading.Tasks.Dataflow;
 using sharpfetch.Modules;
 
 public abstract class ModuleBase : IModule
@@ -7,6 +5,11 @@ public abstract class ModuleBase : IModule
     public abstract string Id { get; }
     public abstract string DisplayName { get; }
     public virtual string Description => string.Empty;
+    /// <summary>
+    /// Override in each module to declare its built-in group.
+    /// Valid built-in values: "system", "hardware", "environment", "status".
+    /// </summary>
+    public virtual string Group => "general";
     public virtual int Order => 100;
     public virtual bool EnabledByDefault => true;
 
@@ -23,7 +26,7 @@ public abstract class ModuleBase : IModule
                 Id,
                 DisplayName,
                 value,
-                stopwatch.Elapsed);
+                stopwatch.Elapsed) with { Group = Group };
         }
         catch (Exception ex)
         {
@@ -32,8 +35,7 @@ public abstract class ModuleBase : IModule
                 Id,
                 DisplayName,
                 ex.Message,
-                stopwatch.Elapsed
-            );
+                stopwatch.Elapsed) with { Group = Group };
         }
     }
 

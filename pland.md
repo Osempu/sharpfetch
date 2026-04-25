@@ -29,8 +29,8 @@
 - [x] Plan to implement configuration (JSON File) for CLI app.
 
 ### Day 8 (In Progress ...)
-- [ ] Add Missing Modules.
-- [ ] Create a grouping mechanism for modules.
+- [x] Add Missing Modules.
+- [x] Create a grouping mechanism for modules.
 - [ ] Add Left panel render method.
 - [ ] Move any missing logic in ModuleResultRender from old render file.
 - [ ] Start planning the interactive configuration Wizard.

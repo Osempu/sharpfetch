@@ -2,9 +2,7 @@ using sharpfetch.Configuration;
 
 namespace sharpfetch.Modules;
 
-/// <summary>
-/// Central registry for all available modules.
-/// </summary>
+/// <summary>Central registry for all available modules.</summary>
 public class ModuleRegistry
 {
     private readonly Dictionary<string, IModule> _modules = new();
@@ -14,13 +12,10 @@ public class ModuleRegistry
 
     private ModuleRegistry()
     {
-        // Auto-discover and register all modules
         DiscoverModules();
     }
 
-    /// <summary>
-    /// Discovers all IModule implementations via reflection.
-    /// </summary>
+    /// <summary>Discovers all IModule implementations in the current assembly via reflection.</summary>
     private void DiscoverModules()
     {
         var moduleType = typeof(IModule);
@@ -36,61 +31,138 @@ public class ModuleRegistry
         }
     }
 
-    /// <summary>
-    /// Manually register a module.
-    /// </summary>
-    public void Register(IModule module)
-    {
-        _modules[module.Id] = module;
-    }
+    /// <summary>Manually register a module, replacing any existing registration for the same Id.</summary>
+    public void Register(IModule module) => _modules[module.Id] = module;
 
-    /// <summary>
-    /// Get a specific module by ID.
-    /// </summary>
+    /// <summary>Get a specific module by Id, or null if not found.</summary>
     public IModule? GetModule(string id)
-    {
-        return _modules.TryGetValue(id, out var module) ? module : null;
-    }
+        => _modules.TryGetValue(id, out var module) ? module : null;
 
-    /// <summary>
-    /// Get all registered modules.
-    /// </summary>
+    /// <summary>Get all registered modules ordered by Order.</summary>
     public IEnumerable<IModule> GetAllModules()
-    {
-        return _modules.Values.OrderBy(m => m.Order);
-    }
+        => _modules.Values.OrderBy(m => m.Order);
 
-    /// <summary>
-    /// Get modules filtered by IDs.
-    /// </summary>
+    /// <summary>Get modules by an explicit list of Ids, preserving Order.</summary>
     public IEnumerable<IModule> GetModules(IEnumerable<string> ids)
-    {
-        return ids.Select(id => GetModule(id))
-            .Where(m => m != null)
-            .Cast<IModule>()
-            .OrderBy(m => m.Order);
-    }
+        => ids.Select(GetModule).Where(m => m != null).Cast<IModule>().OrderBy(m => m.Order);
 
-    /// <summary>
-    /// Get all enabled modules based on configuration.
-    /// </summary>
+    /// <summary>Get all modules belonging to a built-in group (case-insensitive).</summary>
+    public IEnumerable<IModule> GetModulesByGroup(string group)
+        => _modules.Values
+            .Where(m => m.Group.Equals(group, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(m => m.Order);
+
+    /// <summary>Get all enabled modules based on configuration.</summary>
     public IEnumerable<IModule> GetEnabledModules(ModuleConfiguration config)
     {
-        if (config.Modules.Any())
-        {
-            // If specific modules are listed, use only those
+        if (config.Modules.Count > 0)
             return GetModules(config.Modules);
-        }
 
-        // Otherwise, return all modules enabled by default
         return GetAllModules().Where(m => m.EnabledByDefault);
     }
 
     /// <summary>
-    /// Get available module IDs.
+    /// Resolves the effective display groups for the given configuration.
+    /// <para>
+    /// When <see cref="ModuleConfiguration.Groups"/> is non-empty, those groups
+    /// are used (each group collects modules by its explicit module list, or by
+    /// matching the built-in Group value when the list is empty).
+    /// </para>
+    /// <para>
+    /// When no groups are configured, modules are auto-grouped by their built-in
+    /// <see cref="IModule.Group"/> value; the order of groups follows the first
+    /// module encountered in each group.
+    /// </para>
     /// </summary>
-    public IEnumerable<string> GetModuleIds()
+    public IReadOnlyList<ResolvedGroup> GetGroupedModules(ModuleConfiguration config)
     {
-        return _modules.Keys.OrderBy(k => k);
+        var enabled = GetEnabledModules(config).ToList();
+
+        if (config.Groups.Count > 0)
+            return ResolveConfiguredGroups(config.Groups, enabled);
+
+        return ResolveAutoGroups(enabled);
     }
+
+    private static IReadOnlyList<ResolvedGroup> ResolveConfiguredGroups(
+        IEnumerable<GroupConfiguration> groupConfigs,
+        IReadOnlyList<IModule> enabledModules)
+    {
+        var groups = new List<ResolvedGroup>();
+        var assignedIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var gc in groupConfigs)
+        {
+            IEnumerable<IModule> members;
+
+            if (gc.Modules.Count > 0)
+            {
+                // Explicit module list takes priority
+                members = gc.Modules
+                    .Select(id => enabledModules.FirstOrDefault(
+                        m => m.Id.Equals(id, StringComparison.OrdinalIgnoreCase)))
+                    .Where(m => m != null)
+                    .Cast<IModule>()
+                    .OrderBy(m => m.Order);
+            }
+            else
+            {
+                // Auto-collect by matching the built-in Group value
+                members = enabledModules
+                    .Where(m => m.Group.Equals(gc.Id, StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(m => m.Order);
+            }
+
+            var memberList = members.ToList();
+            foreach (var m in memberList)
+                assignedIds.Add(m.Id);
+
+            if (memberList.Count > 0)
+                groups.Add(new ResolvedGroup(gc.ResolvedDisplayName, gc.Color, memberList));
+        }
+
+        // Any enabled modules not assigned to any group go into an implicit "Other" bucket
+        var unassigned = enabledModules
+            .Where(m => !assignedIds.Contains(m.Id))
+            .OrderBy(m => m.Order)
+            .ToList();
+
+        if (unassigned.Count > 0)
+            groups.Add(new ResolvedGroup("Other", "grey", unassigned));
+
+        return groups;
+    }
+
+    private static IReadOnlyList<ResolvedGroup> ResolveAutoGroups(IReadOnlyList<IModule> enabledModules)
+    {
+        // Preserve insertion order so groups appear in the order their first member appears
+        var groupOrder = new List<string>();
+        var groupMap = new Dictionary<string, List<IModule>>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var module in enabledModules)
+        {
+            if (!groupMap.ContainsKey(module.Group))
+            {
+                groupOrder.Add(module.Group);
+                groupMap[module.Group] = [];
+            }
+            groupMap[module.Group].Add(module);
+        }
+
+        return groupOrder
+            .Select(key => new ResolvedGroup(
+                DisplayName: ToTitleCase(key) + " Info",
+                Color: "green",
+                Modules: groupMap[key]))
+            .ToList();
+    }
+
+    /// <summary>Get all registered module Ids, sorted alphabetically.</summary>
+    public IEnumerable<string> GetModuleIds() => _modules.Keys.OrderBy(k => k);
+
+    private static string ToTitleCase(string value) =>
+        string.IsNullOrEmpty(value) ? value : char.ToUpper(value[0]) + value[1..];
 }
+
+/// <summary>A resolved display group ready to be rendered.</summary>
+public record ResolvedGroup(string DisplayName, string Color, IReadOnlyList<IModule> Modules);

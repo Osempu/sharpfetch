@@ -5,6 +5,7 @@ public class GpuModule : ModuleBase
     public override string Id => "gpu";
     public override string DisplayName => "GPU";
     public override string Description => "Graphics Card Information";
+    public override string Group => "hardware";
     public override int Order => 30;
     public override bool EnabledByDefault => true;
 

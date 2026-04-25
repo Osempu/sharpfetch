@@ -1,17 +1,39 @@
 {
   "Modules": {
-    "Modules": [
-      "os",
-      "cpu",
-      "memory",
-      "gpu"
-    ],
+    "Modules": [],
     "ParallelExecution": true,
     "TimeoutMs": 5000,
-    "ShowExecutionTime": false
+    "ShowExecutionTime": false,
+    "groupModules": true,
+    "Groups": [
+      {
+        "Id": "system",
+        "DisplayName": "System Info",
+        "Color": "green",
+        "Modules": []
+      },
+      {
+        "Id": "hardware",
+        "DisplayName": "Hardware Info",
+        "Color": "cyan",
+        "Modules": []
+      },
+      {
+        "Id": "environment",
+        "DisplayName": "Environment Info",
+        "Color": "blue",
+        "Modules": []
+      },
+      {
+        "Id": "status",
+        "DisplayName": "Status Info",
+        "Color": "magenta",
+        "Modules": []
+      }
+    ]
   },
   "Display": {
-    "Format": "trees",
+    "Format": "panels",
     "ShowIcons": true,
     "ColorScheme": "default",
     "ShowCharts": true

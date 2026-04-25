@@ -6,8 +6,9 @@ public class CpuModule : ModuleBase
 {
     public override string Id => "cpu";
     public override string DisplayName => "CPU";
-    public override string Description => string.Empty;
-    public override int Order => 10;
+    public override string Description => "Processor Information";
+    public override string Group => "hardware";
+    public override int Order => 20;
 
     protected override Task<string> GetValueAsync(CancellationToken cancellationToken)
     {
