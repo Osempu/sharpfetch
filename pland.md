@@ -42,7 +42,7 @@
 - [x] Make the disk and memory charts leaner.
 
 ### Day 10 (In Progress ...)
-- [ ] Add nerd font icons version for output icons.
-- [ ] Crate option to display nerd font or emoji icons.
+- [x] Add nerd font icons version for output icons.
+- [x] Crate option to display nerd font or emoji icons.
 - [ ] Refactor project structure and remove unsued files.
 - [ ] Create an appealing README file and add some captures.

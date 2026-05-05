@@ -4,7 +4,6 @@ using sharpfetch.Configuration;
 using sharpfetch.Modules;
 using sharpfetch.Rendering;
 using Spectre.Console;
-
 var rootCommand = new RootCommand("SharpFetch - Fast System Information Tool");
 
 var configOption = new Option<string?>("--configuration", "-c")
@@ -27,6 +26,11 @@ var formatOption = new Option<string?>("--format", "-f")
 var noInconsOption = new Option<bool>("--no-icons")
 {
     Description = "Disable icons in output"
+};
+
+var iconStyleOption = new Option<IconStyle?>("--icon-style")
+{
+    Description = "Icon set to use: Emoji (default) or NerdFont. Overrides config IconStyle when specified."
 };
 
 var showChartsOption = new Option<bool?>("--show-charts")
@@ -67,6 +71,7 @@ rootCommand.Options.Add(configOption);
 rootCommand.Options.Add(modulesoption);
 rootCommand.Options.Add(formatOption);
 rootCommand.Options.Add(noInconsOption);
+rootCommand.Options.Add(iconStyleOption);
 rootCommand.Options.Add(showChartsOption);
 rootCommand.Options.Add(groupOption);
 rootCommand.Options.Add(parallelOption);
@@ -79,6 +84,7 @@ rootCommand.SetAction(async (context) =>
     var modules = context.GetValue(modulesoption);
     var format = context.GetValue(formatOption);
     var noIcons = context.GetValue(noInconsOption);
+    var iconStyle = context.GetValue(iconStyleOption);
     var showCharts = context.GetValue(showChartsOption);
     var group = context.GetValue(groupOption);
     var parallel = context.GetValue(parallelOption);
@@ -122,6 +128,11 @@ rootCommand.SetAction(async (context) =>
     if (noIcons)
     {
         config.Display.ShowIcons = false;
+    }
+
+    if (iconStyle.HasValue)
+    {
+        config.Display.IconStyle = iconStyle.Value;
     }
 
     // CLI flags take precedence over config file values when explicitly provided

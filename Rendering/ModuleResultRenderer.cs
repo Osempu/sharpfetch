@@ -282,8 +282,11 @@ public class ModuleResultRenderer
 
     private string FormatLabel(ModuleResult result)
     {
-        var icon = GetIconForModule(result.ModuleId);
-        return _config.Display.ShowIcons ? $"{icon} {result.DisplayName}" : result.DisplayName;
+        if (!_config.Display.ShowIcons)
+            return result.DisplayName;
+
+        var icon = ModuleIcons.Get(result.ModuleId, _config.Display.IconStyle);
+        return $"{icon} {result.DisplayName}";
     }
 
     /// <summary>
@@ -314,24 +317,6 @@ public class ModuleResultRenderer
             : elapsed.TotalSeconds >= 1
                 ? $"{elapsed.TotalSeconds:F2} s"
                 : $"{elapsed.TotalMilliseconds:F2} ms";
-
-    private static string GetIconForModule(string moduleId) => moduleId switch
-    {
-        "user" => "👤",
-        "os" => "🖥️",
-        "kernel" => "✅",
-        "cpu" => "🔲",
-        "memory" => "💾",
-        "gpu" => "🎮",
-        "bios" => "🔧",
-        "disk" => "💿",
-        "shell" => "🐚",
-        "terminal" => "📟",
-        "windowmanager" => "🪟",
-        "uptime" => "🔥",
-        "datetime" => "🕐",
-        _ => "•",
-    };
 
     /// <summary>Maps a color name string to a <see cref="ConsoleColor"/> for Spectre.Console.</summary>
     private static ConsoleColor MapColor(string color) => color.ToLowerInvariant() switch

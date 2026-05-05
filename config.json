@@ -43,8 +43,9 @@
     ]
   },
   "Display": {
-    "Format": "Minimal",
+    "Format": "Trees",
     "ShowIcons": true,
+    "IconStyle": "NerdFont",
     "ColorScheme": "default",
     "ShowCharts": false,
     "GroupModules": true

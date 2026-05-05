@@ -28,6 +28,19 @@ public static class InteractiveConfigWizard
                 .Title("Show [green]Icons[/]?")
                 .AddChoices(true, false));
 
+        if (config.Display.ShowIcons)
+        {
+            config.Display.IconStyle = AnsiConsole.Prompt(
+                new SelectionPrompt<IconStyle>()
+                    .Title("Select [green]Icon Style[/]:")
+                    .AddChoices(IconStyle.Emoji, IconStyle.NerdFont)
+                    .UseConverter(style => style switch
+                    {
+                        IconStyle.NerdFont => "Nerd Font  (requires a Nerd Font installed in your terminal)",
+                        _                  => "Emoji      (works in every terminal, no setup needed)"
+                    }));
+        }
+
         config.Display.ShowCharts = AnsiConsole.Prompt(
             new SelectionPrompt<bool>()
                 .Title("Show [green]Charts[/]?")
@@ -61,6 +74,8 @@ public static class InteractiveConfigWizard
         grid.AddRow($"📦 [yellow]Modules:[/] {string.Join(", ", config.Modules.Modules)}");
         grid.AddRow($"🖼️ [yellow]Format:[/] {config.Display.Format}");
         grid.AddRow($"🔣 [yellow]Show Icons:[/] {config.Display.ShowIcons}");
+        if (config.Display.ShowIcons)
+            grid.AddRow($"🎨 [yellow]Icon Style:[/] {config.Display.IconStyle}");
         grid.AddRow($"📊 [yellow]Show Charts:[/] {config.Display.ShowCharts}");
         grid.AddRow($"📂 [yellow]Group Modules:[/] {config.Display.GroupModules}");
         grid.AddRow($"🏃🏼 [yellow]Parallel Execution:[/] {config.Modules.ParallelExecution}");

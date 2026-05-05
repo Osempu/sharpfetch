@@ -54,6 +54,12 @@ public class DisplayConfiguration
 {
     public string Format { get; set; } = "panels";
     public bool ShowIcons { get; set; } = true;
+    /// <summary>
+    /// Selects which icon set to use when <see cref="ShowIcons"/> is <c>true</c>.
+    /// <see cref="IconStyle.Emoji"/> works in every terminal; <see cref="IconStyle.NerdFont"/>
+    /// requires a Nerd Font to be installed and active in the terminal.
+    /// </summary>
+    public IconStyle IconStyle { get; set; } = IconStyle.Emoji;
     public string ColorScheme { get; set; } = "default";
     public bool ShowCharts { get; set; } = true;
     /// <summary>

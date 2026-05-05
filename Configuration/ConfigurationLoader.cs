@@ -1,4 +1,5 @@
-using System.Runtime.Serialization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 
 namespace sharpfetch.Configuration;
@@ -63,15 +64,17 @@ public class ConfigurationLoader
             {
                 Format = "panels",
                 ShowIcons = true,
+                IconStyle = IconStyle.Emoji,
                 ColorScheme = "default",
                 ShowCharts = true,
                 GroupModules = true
             }
         };
 
-        var json = System.Text.Json.JsonSerializer.Serialize(defaultConfig, new System.Text.Json.JsonSerializerOptions
+        var json = JsonSerializer.Serialize(defaultConfig, new JsonSerializerOptions
         {
-            WriteIndented = true
+            WriteIndented = true,
+            Converters = { new JsonStringEnumConverter() }
         });
 
         File.WriteAllText(path, json);
@@ -98,9 +101,10 @@ public class ConfigurationLoader
             };
         }
 
-        var json = System.Text.Json.JsonSerializer.Serialize(newConfig, new System.Text.Json.JsonSerializerOptions
+        var json = JsonSerializer.Serialize(newConfig, new JsonSerializerOptions
         {
-            WriteIndented = true
+            WriteIndented = true,
+            Converters = { new JsonStringEnumConverter() }
         });
 
         File.WriteAllText(userConfigPath, json);
