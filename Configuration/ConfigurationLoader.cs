@@ -76,4 +76,33 @@ public class ConfigurationLoader
 
         File.WriteAllText(path, json);
     }
+
+    public static void CreateDefaultConfigFile(SharpFetchConfiguration config)
+    {
+        var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory());
+
+        var userConfigPath = Path.Combine(
+            Directory.GetCurrentDirectory(),
+            DefaultConfigFilename);
+
+        var newConfig = config;
+
+        if (newConfig.Display.GroupModules is true)
+        {
+            newConfig.Modules.Groups = new List<GroupConfiguration>
+            {
+                new GroupConfiguration { Id = "system",      DisplayName = "System Info",      Color = "green"   },
+                new GroupConfiguration { Id = "hardware",    DisplayName = "Hardware Info",    Color = "cyan"    },
+                new GroupConfiguration { Id = "environment", DisplayName = "Environment Info", Color = "blue"    },
+                new GroupConfiguration { Id = "status",      DisplayName = "Status Info",      Color = "magenta" },
+            };
+        }
+
+        var json = System.Text.Json.JsonSerializer.Serialize(newConfig, new System.Text.Json.JsonSerializerOptions
+        {
+            WriteIndented = true
+        });
+
+        File.WriteAllText(userConfigPath, json);
+    }
 }

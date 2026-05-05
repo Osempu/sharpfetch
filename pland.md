@@ -37,20 +37,12 @@
 - [x] Adding showCharts and group CLI options.
 - [x] Fixed the ShowExecutionTime logic.
 
-### Day 9 (1🗓️ Next Session ... ) 
-- [ ] Implement interactive configuration wizard.
-- [ ] Maker the disk and memory charts leaner.
+### Day 9 Completed ‼️🎉 
+- [x] Implement interactive configuration wizard.
+- [x] Make the disk and memory charts leaner.
+
+### Day 10 (In Progress ...)
 - [ ] Add nerd font icons version for output icons.
 - [ ] Crate option to display nerd font or emoji icons.
 - [ ] Refactor project structure and remove unsued files.
 - [ ] Create an appealing README file and add some captures.
-
-### 🗓️ Future Updates
-- [x] Get disk space and memory charts into the panel with their grouped info
-- [ ] Add a colouring options (eg. rainbow, no color, color per group).
-
-## System info Output Formats
-- Panels: Display all system info inside panel.
-- Trees: Use trees widget to display system info using trees.
-- Left Panel: Get all sys info titles (or props) inside a left panel and the values to the right without any border or panel.
-- Plain: Display system info without using any visual widget, just as neofetch or fastfech do it right out of the box.

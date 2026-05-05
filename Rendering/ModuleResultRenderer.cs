@@ -237,6 +237,9 @@ public class ModuleResultRenderer
     /// </summary>
     private static void RenderCharts(IReadOnlyList<ModuleResult> results)
     {
+        var grid = new Grid().AddColumn();
+        grid.AddColumn();
+
         foreach (var result in results)
         {
             if (result.ChartData is not { Count: > 0 })
@@ -250,11 +253,14 @@ public class ModuleResultRenderer
             foreach (var entry in result.ChartData)
                 chart.AddItem(entry.Label, entry.Value, MapChartColor(entry.Color));
 
-            AnsiConsole.Write(
-                new Panel(chart)
-                    .Padding(1, 1)
-                    .Header($"{result.DisplayName} Usage"));
+            grid.AddRow(new Text("Data"), new Panel(chart)
+                .NoBorder());
+            grid.AddEmptyRow();
         }
+
+        AnsiConsole.Write(
+            new Panel(grid)
+                .Header($" Memory & Disk Breakdown ", Justify.Center));
     }
 
     /// <summary>Maps a color name string to a Spectre.Console <see cref="Color"/>.</summary>

@@ -1,4 +1,5 @@
 ﻿using System.CommandLine;
+using sharpfetch;
 using sharpfetch.Configuration;
 using sharpfetch.Modules;
 using sharpfetch.Rendering;
@@ -54,7 +55,14 @@ var generateConfigOption = new Option<string?>("--generate-config")
     Description = "Generate a default configuration file at the specified path"
 };
 
-// Add options to root command
+var interactiveConfigSubCommand = new Command("config-wiz", "Run the interactive configuration wizard");
+interactiveConfigSubCommand.SetAction((context) =>
+{
+    InteractiveConfigWizard.Run();
+});
+
+
+rootCommand.Subcommands.Add(interactiveConfigSubCommand);// Add options to root command
 rootCommand.Options.Add(configOption);
 rootCommand.Options.Add(modulesoption);
 rootCommand.Options.Add(formatOption);
