@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 namespace sharpfetch.Modules;
 
 public class OsModule : ModuleBase
@@ -10,6 +12,14 @@ public class OsModule : ModuleBase
 
     protected override Task<string> GetValueAsync(CancellationToken cancellationToken)
     {
-        return FromResult(Sysinfo.GetOSName());
+        return FromResult(GetOsName());
+    }
+
+    private static string GetOsName()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return "Windows";
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) return "Linux";
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) return "Mac OS";
+        return "Unknown OS";
     }
 }

@@ -44,5 +44,5 @@
 ### Day 10 (In Progress ...)
 - [x] Add nerd font icons version for output icons.
 - [x] Crate option to display nerd font or emoji icons.
-- [ ] Refactor project structure and remove unsued files.
+- [x] Refactor project structure and remove unsued files.
 - [ ] Create an appealing README file and add some captures.
