@@ -1,0 +1,53 @@
+{
+  "Modules": {
+    "Modules": [
+      "user",
+      "os",
+      "disk",
+      "memory",
+      "cpu",
+      "gpu"
+    ],
+    "ParallelExecution": true,
+    "TimeoutMs": 5000,
+    "ShowExecutionTime": true,
+    "Groups": [
+      {
+        "Id": "system",
+        "DisplayName": "System Info",
+        "Color": "green",
+        "Modules": [],
+        "ResolvedDisplayName": "System Info"
+      },
+      {
+        "Id": "hardware",
+        "DisplayName": "Hardware Info",
+        "Color": "cyan",
+        "Modules": [],
+        "ResolvedDisplayName": "Hardware Info"
+      },
+      {
+        "Id": "environment",
+        "DisplayName": "Environment Info",
+        "Color": "blue",
+        "Modules": [],
+        "ResolvedDisplayName": "Environment Info"
+      },
+      {
+        "Id": "status",
+        "DisplayName": "Status Info",
+        "Color": "magenta",
+        "Modules": [],
+        "ResolvedDisplayName": "Status Info"
+      }
+    ]
+  },
+  "Display": {
+    "Format": "Left Panel",
+    "ShowIcons": true,
+    "IconStyle": "NerdFont",
+    "ColorScheme": "default",
+    "ShowCharts": true,
+    "GroupModules": true
+  }
+}
