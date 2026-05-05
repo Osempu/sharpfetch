@@ -45,4 +45,16 @@
 - [x] Add nerd font icons version for output icons.
 - [x] Crate option to display nerd font or emoji icons.
 - [x] Refactor project structure and remove unsued files.
-- [ ] Create an appealing README file and add some captures.
+- [x] Create an appealing README file and add some captures.
+
+### 🪳 Known Issues
+- [ ] Breakdown Charts bug (Module printing duplication)
+- [ ] Add Memory and Disk labels on chart and add Icons.
+- [ ] Add the missing modules to the config wizard and remove non existing ones.
+- [ ] Add missing icons for missing modules (Emojis & Nerd Font).
+- [ ] Look for a cooler 🔥 banner for the config wizard.
+- [ ] Change "Current Configuration" text to "Configuration Preview" or something more explainatory.
+- [ ] Add padding to the grid at the configuration preview.
+- [ ] Display the configuration preview on a table (**Optional**).
+- [ ] Remove ```-generate-config``` option and decide to also remove ```--config``` option.
+- [ ] Only display charts on formats that make sense to show them.

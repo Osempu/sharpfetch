@@ -43,11 +43,11 @@
     ]
   },
   "Display": {
-    "Format": "Trees",
+    "Format": "Left Panel",
     "ShowIcons": true,
     "IconStyle": "NerdFont",
     "ColorScheme": "default",
-    "ShowCharts": false,
+    "ShowCharts": true,
     "GroupModules": true
   }
 }
